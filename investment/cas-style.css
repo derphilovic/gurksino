@@ -25,6 +25,24 @@ justify-content: center;
 
 #navbar li{
     list-style: none;
-    padding: 0 20px;
+    padding: 0 55px;
     position: relative;
 }
+
+#navbar li h2{
+    font-family: Impact;
+    text-decoration: none;
+    font-size: 72px;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+#navbar li a{
+    text-decoration: none;
+    color: #000000;
+}
+
+#input ul label{
+    font-family: Impact;
+}
+
