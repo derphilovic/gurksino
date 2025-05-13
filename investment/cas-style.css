@@ -3,3 +3,28 @@ h1 {
     font-family: Impact;
     font-size: 108px;
 }
+
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 80px;
+    background: #00800B;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 0%;
+    left: 0%;
+    z-index: 1000;
+}
+
+#navbar{
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+#navbar li{
+    list-style: none;
+    padding: 0 20px;
+    position: relative;
+}
