@@ -26,3 +26,15 @@ $is_logged_in = isset($_SESSION['user_id']);
         </ul>
     </div>
 </section>
+
+<section id="main">
+    <div class="main-container">
+    <ul id="activities">
+        <li><a href="activities/gurken-jack.php"><h2>BLACK-JACK</h2></a></li>
+    
+    </ul>
+    </div>
+
+    <a href="../index.html"><h1>NOTFALL</h1></a>
+
+</section>
