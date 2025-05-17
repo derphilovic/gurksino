@@ -1,3 +1,14 @@
+<?php
+// Start session at the very beginning of the file
+session_start();
+
+// If user is already logged in, redirect to main page
+if (isset($_SESSION['user_id'])) {
+    header("Location: main.php");
+    exit;
+}
+?>
+
 <style>
 <?php include 'cas-style.css'; ?>
 </style>
@@ -39,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         
         // Use prepared statement to prevent SQL injection
-        $sql = "SELECT name_id, password FROM id WHERE name_id = ?";
+        $sql = "SELECT id, name_id, password, credit FROM id WHERE name_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $id);
         $stmt->execute();
@@ -48,7 +59,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             if ($row["password"] == $pswrd) {
-                echo "Logged in!";
+                // Store user data in session
+                $_SESSION['user_id'] = $row['id'];
+                $_SESSION['username'] = $row['name_id'];
+                $_SESSION['credit'] = $row['credit'];
+                
+                // Redirect to main page
+                header("Location: main.php");
+                exit;
             } else {
                 echo "Falsches Passwort!";
             }
