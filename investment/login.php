@@ -17,41 +17,47 @@
 </section>
 
 <?php
-$pswrd = $_POST["passw"];
-$id = $_POST["id"];
-
-$host = "localhost";
-$dbname = "data_db";
-$username = "root";
-$password ="";
-
-$conn = mysqli_connect($host, $username, $password, $dbname);
-
-if (mysqli_connect_errno()) {
-    die("Connection error! Please contact your local admin!" . mysqli_connect_error());
- };
-
-$sql = "SELECT name_id, password FROM id";
-
- if ($result->num_rows > 0) {
-    $valid = 0;
-    $validpswrd = 0;
-     while($row = $result->fetch_assoc()) {
-       if ($row["name_id"] == $username){
-        $valid = 1;
-       }
-       if ($row["password"] == $pswrd){
-        $validpswrd = 1;
-       }
-     }
-     if (! $valid) { 
-        die("Kein Benutzername gefunden");
-      }
-    if (! $validpswrd) {
-        die("Falsches Passwort!");
+// Only process login if form was submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get form data
+    $id = isset($_POST["id"]) ? $_POST["id"] : "";
+    $pswrd = isset($_POST["passw"]) ? $_POST["passw"] : "";
+    
+    // Check if fields are not empty
+    if (empty($id) || empty($pswrd)) {
+        echo "Bitte geben Sie Ihre Gurksino-ID und Passwort ein.";
+    } else {
+        $host = "localhost";
+        $dbname = "data_db";
+        $username = "root";
+        $password = "";
+        
+        $conn = mysqli_connect($host, $username, $password, $dbname);
+        
+        if (mysqli_connect_errno()) {
+            die("Connection error! Please contact your local admin! " . mysqli_connect_error());
+        }
+        
+        // Use prepared statement to prevent SQL injection
+        $sql = "SELECT name_id, password FROM id WHERE name_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            if ($row["password"] == $pswrd) {
+                echo "Logged in!";
+            } else {
+                echo "Falsches Passwort!";
+            }
+        } else {
+            echo "Kein Benutzername gefunden";
+        }
+        
+        $stmt->close();
+        $conn->close();
     }
-   } 
-$result = $conn->query($sql);
-
-echo("Logged in!")
+}
 ?>

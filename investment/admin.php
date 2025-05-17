@@ -2,7 +2,7 @@
     <div class="contact-container">
         <h1>Account erstellen</h1>
         <div class="form-wrapper">
-            <form  method="post">
+            <form method="post">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username">
                 <label for="credit">Guthaben</label>
@@ -11,66 +11,88 @@
                 <input type="password" name="passw" id="passw">
                 <label for="passwrpt">Passwort wiederholen</label>
                 <input type="password" name="passwrpt" id="passwrpt">
-                <button>Account erstellen</button>
+                <button type="submit">Account erstellen</button>
             </form>
         </div>
     </div>
-    
 </section>
 
 <?php
-$credit = $_POST["credit"];
-$name_id = $_POST["username"];
-$passw = $_POST["passw"];
-$passwrpt = $_POST["passwrpt"];
+// Only process if form was submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get form data with validation
+    $credit = isset($_POST["credit"]) ? $_POST["credit"] : "";
+    $name_id = isset($_POST["username"]) ? trim($_POST["username"]) : "";
+    $passw = isset($_POST["passw"]) ? $_POST["passw"] : "";
+    $passwrpt = isset($_POST["passwrpt"]) ? $_POST["passwrpt"] : "";
 
-$host = "localhost";
-$dbname = "data_db";
-$usernme = "root";
-$password = "";
-
-$conn = mysqli_connect($host, $usernme, $password, $dbname);
-
- if (mysqli_connect_errno()) {
-    die("Connection error! Fuck you!" . mysqli_connect_error());
- };
-
- $sql = "SELECT name_id, password, credit FROM id";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-      if ($row["name_id"] == $name_id) {
-          die("Name schon in benutzung");
-      }
+    // Input validation
+    if (empty($name_id)) {
+        die("Bitte Nutzername eingeben!");
     }
-  } 
-  
-if (! $name_id) {
-    die("Nutzername eingeben!");
+    
+    if (empty($passw)) {
+        die("Bitte Passwort eingeben!");
+    }
+    
+    if ($passw != $passwrpt) {
+        die("Passwörter stimmen nicht überein!");
+    }
+    
+    if (!is_numeric($credit) || $credit < 0) {
+        die("Bitte gültiges Guthaben eingeben!");
+    }
+    
+    $host = "localhost";
+    $dbname = "data_db";
+    $usernme = "root";
+    $password = "";
+    
+    $conn = mysqli_connect($host, $usernme, $password, $dbname);
+    
+    if (mysqli_connect_errno()) {
+        die("Datenbankverbindung fehlgeschlagen: " . mysqli_connect_error());
+    }
+
+    // Check if username already exists
+    $check_sql = "SELECT name_id FROM id WHERE name_id = ?";
+    $check_stmt = mysqli_prepare($conn, $check_sql);
+    mysqli_stmt_bind_param($check_stmt, "s", $name_id);
+    mysqli_stmt_execute($check_stmt);
+    mysqli_stmt_store_result($check_stmt);
+    
+    if (mysqli_stmt_num_rows($check_stmt) > 0) {
+        mysqli_stmt_close($check_stmt);
+        mysqli_close($conn);
+        die("Dieser Nutzername ist bereits vergeben!");
+    }
+    
+    mysqli_stmt_close($check_stmt);
+    
+    // Fix for the primary key issue - get the next available ID
+    $max_id_query = "SELECT MAX(id) as max_id FROM id";
+    $result = mysqli_query($conn, $max_id_query);
+    $row = mysqli_fetch_assoc($result);
+    $next_id = ($row['max_id'] !== null) ? $row['max_id'] + 1 : 1;
+    
+    // Insert new user with explicit ID
+    $insert_sql = "INSERT INTO id (id, name_id, password, credit) VALUES (?, ?, ?, ?)";
+    $insert_stmt = mysqli_prepare($conn, $insert_sql);
+    
+    if (!$insert_stmt) {
+        mysqli_close($conn);
+        die("Datenbankfehler: " . mysqli_error($conn));
+    }
+    
+    mysqli_stmt_bind_param($insert_stmt, "issd", $next_id, $name_id, $passw, $credit);
+    
+    if (mysqli_stmt_execute($insert_stmt)) {
+        echo "Account erfolgreich erstellt!";
+    } else {
+        echo "Fehler beim Erstellen des Accounts: " . mysqli_stmt_error($insert_stmt);
+    }
+    
+    mysqli_stmt_close($insert_stmt);
+    mysqli_close($conn);
 }
-if (! $passw) {
-    die("Passwort eingeben!");
-}
-if ($passw  != $passwrpt) {
-die("Passwort falsch wiederholt");
-}
-if ($credit < 0) {
-die("Falsches Guthaben!");
-}
-
-
-$sqql = "INSERT INTO id (name_id, password, credit)
-        VALUES (?, ?, ?)";
-
-$stmt = mysqli_stmt_init($conn);
-
-if ( !mysqli_stmt_prepare($stmt, $sqql)) {
-    die(mysqli_error($conn));
-};
-
-mysqli_stmt_bind_param($stmt, "sss", $name_id, $passw, $credit);
-mysqli_stmt_execute($stmt);
-echo "Account erstellt!";
-
 ?>
