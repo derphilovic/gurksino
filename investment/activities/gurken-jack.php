@@ -17,6 +17,11 @@ $deck = array(
     "K" => 10
 );
 
+// Format credit to have only one decimal place
+if (isset($_SESSION['credit'])) {
+    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
+}
+
 // Check if user has credit - redirect if credit is 0 or less
 if (!isset($_SESSION['credit']) || $_SESSION['credit'] <= 0) {
     header("Location: ../main.php");
@@ -35,6 +40,8 @@ if (!isset($_SESSION['player_hand'])) {
 $bet = 0; // Default value
 if (isset($_POST['bet']) && is_numeric($_POST['bet'])) {
     $bet = (float)$_POST['bet'];
+    // Round bet to one decimal place
+    $bet = round($bet * 10) / 10;
     
     // Start a new game when bet is placed
     if ($bet > 0 && $_SESSION['game_state'] == 'betting') {
@@ -70,7 +77,9 @@ if (isset($_POST['action'])) {
         if ($_SESSION['playerScore'] > 21) {
             $_SESSION['game_state'] = 'ended';
             if (isset($_SESSION['credit'])) {
-                $_SESSION['credit'] -= $bet;
+                $_SESSION['credit'] = max(0, $_SESSION['credit'] - $bet);
+                // Round to one decimal place
+                $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
             }
         }
     }
@@ -96,11 +105,15 @@ if (isset($_POST['action'])) {
                 // Now check if dealer wins
                 if ($_SESSION['dealerScore'] > $_SESSION['playerScore']) {
                     if (isset($_SESSION['credit'])) {
-                        $_SESSION['credit'] -= $bet;
+                        $_SESSION['credit'] = max(0, $_SESSION['credit'] - $bet);
+                        // Round to one decimal place
+                        $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
                     }
                 } else if ($_SESSION['dealerScore'] < $_SESSION['playerScore']) {
                     if (isset($_SESSION['credit'])) {
                         $_SESSION['credit'] += $bet;
+                        // Round to one decimal place
+                        $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
                     }
                 }
                 // Else it's a push (tie)
@@ -108,6 +121,8 @@ if (isset($_POST['action'])) {
                 // Player wins normally
                 if (isset($_SESSION['credit'])) {
                     $_SESSION['credit'] += $bet;
+                    // Round to one decimal place
+                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
                 }
             }
         } 
@@ -121,19 +136,25 @@ if (isset($_POST['action'])) {
                 }
                 // Dealer wins
                 if (isset($_SESSION['credit'])) {
-                    $_SESSION['credit'] -= $bet;
+                    $_SESSION['credit'] = max(0, $_SESSION['credit'] - $bet);
+                    // Round to one decimal place
+                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
                 }
             } else {
                 // Player wins normally
                 if (isset($_SESSION['credit'])) {
                     $_SESSION['credit'] += $bet;
+                    // Round to one decimal place
+                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
                 }
             }
         } 
         else if ($_SESSION['playerScore'] < $_SESSION['dealerScore']) {
             // Dealer wins
             if (isset($_SESSION['credit'])) {
-                $_SESSION['credit'] -= $bet;
+                $_SESSION['credit'] = max(0, $_SESSION['credit'] - $bet);
+                // Round to one decimal place
+                $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
             }
         }
         // Else it's a push (tie), no money changes hands
@@ -174,7 +195,7 @@ function dealRiggedCard($to, $highCards) {
     if (($to == 'player' && $highCards) || ($to == 'dealer' && !$highCards)) {
         // Player getting high cards (more likely to bust) or dealer getting low cards (less likely to bust)
         $favoredSet = $highCardSet;
-        $chance = 70; // 70% chance of getting a high card for player, or low card for dealer
+        $chance =60; // 70% chance of getting a high card for player, or low card for dealer
     } else {
         // Player getting low cards or dealer getting high cards
         $favoredSet = $lowCardSet;
