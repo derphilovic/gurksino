@@ -30,7 +30,7 @@ $is_logged_in = isset($_SESSION['user_id']);
 <section id="main">
     <div class="main-container">
     <ul id="activities">
-        <li><a href="activities/gurken-jack.php"><h2>BLACK-JACK</h2></a></li>
+        <li><a href="activities/gurken-jack.php"><img src="images/gurken-black.jpg" alt=""></a></li>
     
     </ul>
     </div>

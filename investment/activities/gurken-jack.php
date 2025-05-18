@@ -1,5 +1,43 @@
 <?php
 session_start();
+if (isset($_SESSION['user_id'])) {
+    try {
+        // Database connection parameters
+        $host = "localhost";
+        $dbname = "data_db";
+        $username = "root";
+        $password = "";
+        
+        // Connect to database with error handling
+        $conn = mysqli_connect($host, $username, $password, $dbname);
+        
+        // Check connection
+        if (mysqli_connect_errno()) {
+            // Log error but continue with logout process
+            error_log("Database connection failed: " . mysqli_connect_error());
+            header("Location: ../main.php");
+            exit;
+        } else {
+            // Get user data from session
+            $user_id = $_SESSION['user_id'];
+            $credit = $_SESSION['credit'];
+            
+            // Update user credit in database
+            $sql = "UPDATE id SET credit = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("di", $credit, $user_id);
+            $stmt->execute();
+            
+            // Close database connection
+            $stmt->close();
+            $conn->close();
+        }
+    } catch (Exception $e) {
+        // Log error but continue with logout process
+        error_log("Credit assignment error: " . $e->getMessage());
+    }
+}
+
 // Define the deck of cards
 $deck = array(
     "A" => 11,
@@ -195,7 +233,7 @@ function dealRiggedCard($to, $highCards) {
     if (($to == 'player' && $highCards) || ($to == 'dealer' && !$highCards)) {
         // Player getting high cards (more likely to bust) or dealer getting low cards (less likely to bust)
         $favoredSet = $highCardSet;
-        $chance =60; // 70% chance of getting a high card for player, or low card for dealer
+        $chance =63; // 63% chance of dealer priority (about 40% win chance, if 64% about 30% win chance)
     } else {
         // Player getting low cards or dealer getting high cards
         $favoredSet = $lowCardSet;
