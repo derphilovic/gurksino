@@ -18,9 +18,92 @@ function getDbConnection() {
     return $conn;
 }
 ?>
-<style>
-    <?php include 'cas-style.css'; ?>
-</style>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gurksino Admin</title>
+    <style>
+        <?php include 'cas-style.css'; ?>
+        
+        /* Responsive styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .contact-container, .stats-container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        /* Media queries */
+        @media screen and (max-width: 768px) {
+            .contact-container, .stats-container {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            h2 {
+                font-size: 18px;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .contact-container, .stats-container {
+                width: 100%;
+                padding: 10px;
+            }
+            
+            input, button {
+                padding: 8px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            h2 {
+                font-size: 16px;
+            }
+            
+            .form-wrapper, .stats-wrapper {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
 <?php if ($admin_page == 0): ?>
 
 <section id="employeefield">
@@ -90,7 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         // Check if fields are not empty
         if (empty($emp_id) || empty($emp_pswrd)) {
-            echo "Bitte geben Sie Ihre Gurksino-ID und Passwort ein.";
+            echo "<div class='error-message'>Bitte geben Sie Ihre Gurksino-ID und Passwort ein.</div>";
         } else {
             $conn = getDbConnection();
             
@@ -117,10 +200,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: " . $_SERVER['PHP_SELF']);
                     exit;
                 } else {
-                    echo "Falsches Passwort!";
+                    echo "<div class='error-message'>Falsches Passwort!</div>";
                 }
             } else {
-                echo "Kein Benutzername gefunden";
+                echo "<div class='error-message'>Kein Benutzername gefunden</div>";
             }
             
             $stmt->close();
@@ -138,13 +221,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Input validation
         if (empty($name_id)) {
-            echo "Bitte Nutzername eingeben!";
+            echo "<div class='error-message'>Bitte Nutzername eingeben!</div>";
         } elseif (empty($passw)) {
-            echo "Bitte Passwort eingeben!";
+            echo "<div class='error-message'>Bitte Passwort eingeben!</div>";
         } elseif ($passw != $passwrpt) {
-            echo "Passwörter stimmen nicht überein!";
+            echo "<div class='error-message'>Passwörter stimmen nicht überein!</div>";
         } elseif (!is_numeric($credit) || $credit < 0) {
-            echo "Bitte gültiges Guthaben eingeben!";
+            echo "<div class='error-message'>Bitte gültiges Guthaben eingeben!</div>";
         } else {
             $conn = getDbConnection();
 
@@ -158,7 +241,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (mysqli_stmt_num_rows($check_stmt) > 0) {
                 mysqli_stmt_close($check_stmt);
                 mysqli_close($conn);
-                echo "Dieser Nutzername ist bereits vergeben!";
+                echo "<div class='error-message'>Dieser Nutzername ist bereits vergeben!</div>";
             } else {
                 mysqli_stmt_close($check_stmt);
                 
@@ -177,14 +260,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 if (!$insert_stmt) {
                     mysqli_close($conn);
-                    echo "Datenbankfehler: " . mysqli_error($conn);
+                    echo "<div class='error-message'>Datenbankfehler: " . mysqli_error($conn) . "</div>";
                 } else {
                     mysqli_stmt_bind_param($insert_stmt, "issd", $next_id, $name_id, $passw, $credit);
                     
                     if (mysqli_stmt_execute($insert_stmt)) {
-                        echo "Account erfolgreich erstellt!";
+                        echo "<div class='success-message'>Account erfolgreich erstellt!</div>";
                     } else {
-                        echo "Fehler beim Erstellen des Accounts: " . mysqli_stmt_error($insert_stmt);
+                        echo "<div class='error-message'>Fehler beim Erstellen des Accounts: " . mysqli_stmt_error($insert_stmt) . "</div>";
                     }
                     
                     mysqli_stmt_close($insert_stmt);
@@ -206,3 +289,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+</body>
+</html>
