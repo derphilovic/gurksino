@@ -1,8 +1,13 @@
 <?php
+// Add this near the top of the file, after session_start()
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 session_start();
+
+// Add this variable to control rigging
+$enableRigging = false; // Set to false to disable rigged gameplay
+
 if (isset($_SESSION['user_id'])) {
     try {
         // Database connection parameters
@@ -136,85 +141,8 @@ if (isset($_POST['action'])) {
     
         $_SESSION['game_state'] = 'ended';
     
-        // Determine winner with subtle rigging for 35% player win rate
-        if ($_SESSION['dealerScore'] > 21) {
-            // Dealer busts - player would win
-            // But let's add a subtle chance that dealer gets a better hand
-            if (mt_rand(1, 100) <= 15) { // 15% chance to rig even when dealer busts
-                // Make dealer's score better but still believable
-                $targetScore = mt_rand(17, 21);
-                adjustDealerHand($targetScore);
-            
-                // Dealer wins
-                if (isset($_SESSION['credit'])) {
-                    $_SESSION['credit'] = max(0, $_SESSION['credit'] - $bet);
-                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
-                }
-            } else {
-                // Player wins normally (85% chance when dealer busts)
-                if (isset($_SESSION['credit'])) {
-                    $_SESSION['credit'] += $bet;
-                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
-                }
-            }
-        } 
-        else if ($_SESSION['playerScore'] > $_SESSION['dealerScore']) {
-            // Player would win, but let's add a chance that dealer gets a better hand
-            if (mt_rand(1, 100) <= 50) { // 50% chance to rig when player is ahead
-                // Make it look natural - dealer gets exactly what they need
-                $targetScore = $_SESSION['playerScore'] + mt_rand(1, 2);
-                if ($targetScore > 21) $targetScore = 21;
-            
-                adjustDealerHand($targetScore);
-            
-                // Dealer wins
-                if (isset($_SESSION['credit'])) {
-                    $_SESSION['credit'] = max(0, $_SESSION['credit'] - $bet);
-                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
-                }
-            } else {
-                // Player wins (50% chance when player is ahead)
-                if (isset($_SESSION['credit'])) {
-                    $_SESSION['credit'] += $bet;
-                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
-                }
-            }
-        } 
-        else if ($_SESSION['playerScore'] < $_SESSION['dealerScore']) {
-            // Dealer is ahead, give player a small chance to win anyway
-            if (mt_rand(1, 100) <= 10) { // 10% chance for player to win when behind
-                // Make it look natural - dealer busts
-                $targetScore = 22 + mt_rand(0, 3); // More realistic bust (22-25)
-                adjustDealerHand($targetScore);
-            
-                // Player wins
-                if (isset($_SESSION['credit'])) {
-                    $_SESSION['credit'] += $bet;
-                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
-                }
-            } else {
-                // Dealer wins (90% chance when dealer is ahead)
-                if (isset($_SESSION['credit'])) {
-                    $_SESSION['credit'] = max(0, $_SESSION['credit'] - $bet);
-                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
-                }
-            }
-        }
-        else { // It's a tie
-            // In ties, slightly favor the house
-            if (mt_rand(1, 100) <= 70) { // 70% chance dealer wins on tie
-                // Dealer gets one more point
-                $targetScore = $_SESSION['dealerScore'] + 1;
-                adjustDealerHand($targetScore);
-            
-                // Dealer wins
-                if (isset($_SESSION['credit'])) {
-                    $_SESSION['credit'] = max(0, $_SESSION['credit'] - $bet);
-                    $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
-                }
-            }
-            // 30% chance it remains a tie, no money changes hands
-        }
+        // Use the determineWinner function to handle the outcome
+        determineWinner($bet);
     }
     else if ($_POST['action'] == 'new_game') {
         // Check if user still has credit
@@ -267,7 +195,15 @@ function dealCard($to) {
 
 // Function to deal rigged cards more subtly
 function dealRiggedCard($to, $highCards) {
-    global $deck;
+    global $deck, $enableRigging;
+    
+    // If rigging is disabled, just deal a random card
+    if (!$enableRigging) {
+        $card = array_rand($deck);
+        $_SESSION[$to.'_hand'][] = $card;
+        calculateScores();
+        return;
+    }
     
     // Define card sets
     $highCardSet = array("10", "J", "Q", "K");
@@ -415,6 +351,35 @@ function calculateScores() {
 
 // Function to determine winner with rigging
 function determineWinner($bet) {
+    global $enableRigging;
+    
+    // If rigging is disabled, determine winner fairly
+    if (!$enableRigging) {
+        if ($_SESSION['dealerScore'] > 21) {
+            // Dealer busts - player wins
+            if (isset($_SESSION['credit'])) {
+                $_SESSION['credit'] += $bet;
+                $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
+            }
+        } 
+        else if ($_SESSION['playerScore'] > $_SESSION['dealerScore']) {
+            // Player wins
+            if (isset($_SESSION['credit'])) {
+                $_SESSION['credit'] += $bet;
+                $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
+            }
+        } 
+        else if ($_SESSION['playerScore'] < $_SESSION['dealerScore']) {
+            // Dealer wins
+            if (isset($_SESSION['credit'])) {
+                $_SESSION['credit'] = max(0, $_SESSION['credit'] - $bet);
+                $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
+            }
+        }
+        // It's a tie - no money changes hands
+        return;
+    }
+    
     // Determine winner with subtle rigging for 35% player win rate
     if ($_SESSION['dealerScore'] > 21) {
         // Dealer busts - player would win
