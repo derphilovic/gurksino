@@ -508,7 +508,7 @@ function adjustDealerHand($targetScore) {
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #2c3e50;
+            background-color:rgb(0, 189, 16);
             color: white;
             margin: 0;
             padding: 20px;
@@ -517,7 +517,7 @@ function adjustDealerHand($targetScore) {
         .game-container {
             max-width: 800px;
             margin: 0 auto;
-            background-color: #34495e;
+            background-color:rgb(0, 82, 7);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
@@ -525,7 +525,7 @@ function adjustDealerHand($targetScore) {
         .card-area {
             margin: 20px 0;
             min-height: 120px;
-            background-color: #2c3e50;
+            background-color:rgb(0, 82, 7);
             border-radius: 5px;
             padding: 10px;
         }
@@ -570,6 +570,32 @@ function adjustDealerHand($targetScore) {
             font-size: 20px;
             font-weight: bold;
             margin: 10px 0;
+        }
+
+        .emergency-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .emergency-button:hover {
+            background-color: darkred;
+        }
+
+        .back-link{
+            background-color: white;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .back-link:hover {
+            background-color: lightgray;
         }
     </style>
 </head>
@@ -661,9 +687,12 @@ function adjustDealerHand($targetScore) {
                 </div>
             </div>
         <?php endif; ?>
-        
         <div class="back-link">
-            <a href="../main.php" style="color: white;">Back to Main</a>
+            <a href="../main.php" style=" text-decoration: none;"><h2 style=" color :rgb(42, 42, 42)">Main-Menu</h2></a>
+        </div>
+        <br>
+        <div class="emergency-button">
+            <a href="../../index.html" style=" text-decoration: none;"> <h2 style="color :rgb(91, 0, 0)">NOT</h2></a>
         </div>
     </div>
 </body>
