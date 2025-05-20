@@ -508,27 +508,44 @@ function adjustDealerHand($targetScore) {
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color:rgb(0, 189, 16);
+            background-color: rgb(0, 189, 16);
             color: white;
             margin: 0;
             padding: 20px;
             text-align: center;
         }
+
+        h1 {
+            text-align: center;
+            font-family: Impact, sans-serif;
+            font-size: 72px;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            font-family: Impact, sans-serif;
+            font-size: 24px;
+            margin: 15px 0;
+        }
+
         .game-container {
             max-width: 800px;
             margin: 0 auto;
-            background-color:rgb(0, 82, 7);
+            background-color: rgb(0, 82, 7);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
+
         .card-area {
             margin: 20px 0;
             min-height: 120px;
-            background-color:rgb(0, 82, 7);
+            background-color: rgb(0, 82, 7);
             border-radius: 5px;
             padding: 10px;
         }
+
         .card {
             display: inline-block;
             width: 80px;
@@ -540,11 +557,15 @@ function adjustDealerHand($targetScore) {
             line-height: 120px;
             font-size: 24px;
             font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
+
         .actions {
             margin: 20px 0;
         }
-        button {
+
+        button, 
+        input[type="submit"] {
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -552,40 +573,57 @@ function adjustDealerHand($targetScore) {
             margin: 5px;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
         }
-        button:hover {
+
+        button:hover,
+        input[type="submit"]:hover {
             background-color: #45a049;
         }
+
         input[type="number"] {
             padding: 10px;
             width: 100px;
             border-radius: 4px;
             border: none;
+            margin-bottom: 15px;
+            font-size: 16px;
         }
+
         .status {
             font-size: 18px;
             margin: 15px 0;
         }
+
         .credit-display {
             font-size: 20px;
             font-weight: bold;
             margin: 10px 0;
+            font-family: Impact, sans-serif;
         }
 
         .emergency-button {
+            display: inline-block;
             background-color: red;
             color: white;
-            border: none;
             padding: 10px 20px;
-            margin: 5px;
             border-radius: 4px;
-            cursor: pointer;
+            text-decoration: none;
+            margin: 20px 0;
+            transition: background-color 0.3s;
         }
+
         .emergency-button:hover {
             background-color: darkred;
         }
 
-        .back-link{
+        .emergency-button h2 {
+            color: rgb(91, 0, 0);
+            margin: 0;
+        }
+
+        .back-link {
             background-color: white;
             color: white;
             border: none;
@@ -593,9 +631,76 @@ function adjustDealerHand($targetScore) {
             margin: 5px;
             border-radius: 4px;
             cursor: pointer;
+            text-decoration: none;
         }
+
         .back-link:hover {
             background-color: lightgray;
+        }
+
+        .back-link h2 {
+            color: rgb(42, 42, 42);
+            margin: 0;
+        }
+
+        .betting-area {
+            margin: 20px 0;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 1200px) {
+            h1 {
+                font-size: 60px;
+            }
+        }
+
+        @media screen and (max-width: 992px) {
+            h1 {
+                font-size: 48px;
+            }
+            
+            .game-container {
+                max-width: 700px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+            
+            .game-container {
+                max-width: 90%;
+                padding: 15px;
+            }
+            
+            .card {
+                width: 70px;
+                height: 105px;
+                line-height: 105px;
+                font-size: 20px;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            h1 {
+                font-size: 30px;
+            }
+            
+            .game-container {
+                padding: 10px;
+            }
+            
+            .card {
+                width: 60px;
+                height: 90px;
+                line-height: 90px;
+                font-size: 18px;
+            }
+            
+            button, input[type="submit"] {
+                padding: 8px 16px;
+            }
         }
     </style>
 </head>
@@ -692,7 +797,7 @@ function adjustDealerHand($targetScore) {
         </div>
         <br>
         <div class="emergency-button">
-            <a href="../../index.html" style=" text-decoration: none;"> <h2 style="color :rgb(91, 0, 0)">NOT</h2></a>
+            <a href="../../index.html" style=" text-decoration: none;"> <h2 style="color : #FFFFFF">NOT</h2></a>
         </div>
     </div>
 </body>
