@@ -52,6 +52,14 @@ $fields = array(
                 "radieschen",
                 "zucchini");
 
+$values = array(
+                "10",
+                "20",
+                "30",
+                "40",
+                "50");
+$bet = 0;
+
 // Format credit to have only one decimal place
 if (isset($_SESSION['credit'])) {
     $_SESSION['credit'] = round($_SESSION['credit'] * 10) / 10;
@@ -74,3 +82,15 @@ if (!isset($_SESSION['wheel_1'])) {
 ?>
 
 <h1>GURKI-SLOTS</h1>
+<?php if ($_SESSION['game_state'] == 'betting'): ?>
+<form action="" method="post">
+<label for="bet">Bet:</label>   
+<input type="number" name="bet" placeholder="Bet">
+<label for="bet_button">BET</label>
+<input type="submit" name="bet_button" value="Bet">
+</form>
+
+<?php elseif ($_SESSION['game_state'] == 'playing'): ?>
+
+
+<?php endif; ?>
