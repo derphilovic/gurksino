@@ -5,6 +5,12 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 session_start();
 
+// CONFIGURATION SETTINGS
+// Set to false to disable rigging and make the game fair
+$enableRigging = true;
+// Win rate percentage (1-100) - only applies when rigging is enabled
+$winChance = 45; // 35% chance of winning
+
 // Database connection and credit update
 if (isset($_SESSION['user_id'])) {
     try {
@@ -59,11 +65,7 @@ $values = array(
     "50"
 );
 
-// Enable rigging - set to false to disable
-$enableRigging = true;
-
 // Rigging parameters
-$winRate = 35; // 35% chance of winning (similar to blackjack)
 $jackpotRate = 10; // 10% chance of jackpot when winning
 
 $message = "";
@@ -127,28 +129,47 @@ if (isset($_POST['spin_button']) && $_SESSION['game_state'] == 'playing') {
     $_SESSION['win_amount'] = 0;
     
     // Determine if this spin should be rigged
-    $shouldRig = $enableRigging && (mt_rand(1, 100) > $winRate);
+    $shouldRig = $enableRigging && (mt_rand(1, 100) > $winChance);
     
-    if ($shouldRig) {
-        // Rig for a loss - ensure no matches or only one match
-        rigForLoss();
-    } else {
-        // Allow a fair win chance
-        // Increment win counter
-        if (!isset($_SESSION['total_wins'])) {
-            $_SESSION['total_wins'] = 0;
-        }
-        $_SESSION['total_wins']++;
-        
-        // Determine if this should be a jackpot or just a partial match
-        $isJackpot = (mt_rand(1, 100) <= $jackpotRate);
-        
-        if ($isJackpot) {
-            // Rig for jackpot - all three symbols match
-            rigForJackpot();
+    if ($enableRigging) {
+        if ($shouldRig) {
+            // Rig for a loss - ensure no matches or only one match
+            rigForLoss();
         } else {
-            // Rig for partial win - two symbols match
-            rigForPartialWin();
+            // Allow a fair win chance
+            // Increment win counter
+            if (!isset($_SESSION['total_wins'])) {
+                $_SESSION['total_wins'] = 0;
+            }
+            $_SESSION['total_wins']++;
+            
+            // Determine if this should be a jackpot or just a partial match
+            $isJackpot = (mt_rand(1, 100) <= $jackpotRate);
+            
+            if ($isJackpot) {
+                // Rig for jackpot - all three symbols match
+                rigForJackpot();
+            } else {
+                // Rig for partial win - two symbols match
+                rigForPartialWin();
+            }
+        }
+    } else {
+        // No rigging - completely random results
+        $_SESSION['wheel_1'] = mt_rand(0, count($fields) - 1);
+        $_SESSION['wheel_2'] = mt_rand(0, count($fields) - 1);
+        $_SESSION['wheel_3'] = mt_rand(0, count($fields) - 1);
+        
+        // Check if we won with fair play
+        if ($_SESSION['wheel_1'] == $_SESSION['wheel_2'] && $_SESSION['wheel_2'] == $_SESSION['wheel_3'] ||
+            $_SESSION['wheel_1'] == $_SESSION['wheel_2'] || 
+            $_SESSION['wheel_2'] == $_SESSION['wheel_3'] || 
+            $_SESSION['wheel_1'] == $_SESSION['wheel_3']) {
+            // Increment win counter for statistics
+            if (!isset($_SESSION['total_wins'])) {
+                $_SESSION['total_wins'] = 0;
+            }
+            $_SESSION['total_wins']++;
         }
     }
     
