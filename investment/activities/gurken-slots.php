@@ -9,7 +9,7 @@ session_start();
 // Set to false to disable rigging and make the game fair
 $enableRigging = true;
 // Win rate percentage (1-100) - only applies when rigging is enabled
-$winChance = 45; // 35% chance of winning
+$winChance = 55; // 35% chance of winning
 
 // Database connection and credit update
 if (isset($_SESSION['user_id'])) {
