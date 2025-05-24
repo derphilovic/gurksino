@@ -1,0 +1,71 @@
+body {
+    background-image: url(Mathe.jpg);
+}
+
+h1 { 
+    text-align: center
+    font-size: 100px;
+    color: black;
+}
+
+
+#idStarte{
+    background-color: #aa0404; /* Green */
+    border: none;
+    border-radius: 15px;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    font-size: 30px;
+    margin: 5% auto;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+  }
+  
+  #idStarte{
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  }
+  
+  #idStarte:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+  }
+
+#idFrage{
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 40px;
+margin: 10%;
+}
+
+.classAntworten{
+    background-color: #bbbbbb; /* Green */
+    border: none;
+    border-radius: 15px;
+    color: rgb(27, 2, 2);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 30px;
+    margin: 3%;
+    cursor: pointer;
+
+}
+.classAntworten{
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.classAntworten:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+  }
+
+
+#idFragen{
+    display: flex;
+align-items: center;
+justify-content: center;
+}
